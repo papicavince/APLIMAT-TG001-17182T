@@ -1,4 +1,5 @@
-﻿using SharpGL;
+﻿using aplimat_labs.Utilities;
+using SharpGL;
 using SharpGL.SceneGraph.Primitives;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,16 @@ namespace aplimat_labs
         public MainWindow()
         {
             InitializeComponent();
+
+            //while (true) Console.WriteLine(rng.Generate());
         }
+
+        private CubeMesh myCube = new CubeMesh();
+        private Randomizer rng = new Randomizer(-20, 20);
+        private Randomizer rng1 = new Randomizer(0f, 1f);
+
+        private List<CubeMesh> myCubes = new List<CubeMesh>();
+        private List<CubeMesh> myCubes1 = new List<CubeMesh>();
 
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
@@ -36,18 +46,20 @@ namespace aplimat_labs
 
             // Move Left And Into The Screen
             gl.LoadIdentity();
-            gl.Translate(0.0f, 0.0f, -6.0f);
+            gl.Translate(0.0f, 0.0f, -100.0f);
+
+            CubeMesh myCube = new CubeMesh();
+            myCube.Position = new Vector3(Gaussian.Generate(0, 15), rng.GenerateInt(), 0);
+            myCubes.Add(myCube);
+
+            foreach (var cube in myCubes)
+            {
+                cube.Draw(gl);
+                gl.Color(rng1.GenerateDouble(), rng1.GenerateDouble(), rng1.GenerateDouble());
+            }
 
 
-            gl.Rotate(rotation, 0.0f, 1.0f, 0.0f);
-
-            Teapot tp = new Teapot();
-            tp.Draw(gl, 14, 1, OpenGL.GL_FILL);
-
-            rotation += 3.0f;
         }
-
-        float rotation = 0;
 
         private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
@@ -63,7 +75,6 @@ namespace aplimat_labs
 
             float[] lmodel_ambient = new float[] { 0.2f, 0.2f, 0.2f, 1.0f };
             gl.LightModel(OpenGL.GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
-
             gl.LightModel(OpenGL.GL_LIGHT_MODEL_AMBIENT, global_ambient);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, light0pos);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_AMBIENT, light0ambient);
@@ -71,6 +82,12 @@ namespace aplimat_labs
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, light0specular);
             gl.Enable(OpenGL.GL_LIGHTING);
             gl.Enable(OpenGL.GL_LIGHT0);
+
+            //gl.Color(rng1.GenerateInt(), rng1.GenerateInt(), rng1.GenerateInt());
+
+
+            gl.Disable(OpenGL.GL_LIGHTING);
+            gl.Disable(OpenGL.GL_LIGHT0);
 
             gl.ShadeModel(OpenGL.GL_SMOOTH);
         }
